@@ -1,0 +1,40 @@
+# Project: plataforma-de-comunicacao
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = srcs/main.o srcs/message.o srcs/user.o team.o srcs/hashtable.o
+LINKOBJ  = srcs/main.o srcs/message.o srcs/user.o team.o srcs/hashtable.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = plataforma-de-comunicacao.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS   = $(INCS) 
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+srcs/main.o: srcs/main.c
+	$(CC) -c srcs/main.c -o srcs/main.o $(CFLAGS)
+
+srcs/message.o: srcs/message.c
+	$(CC) -c srcs/message.c -o srcs/message.o $(CFLAGS)
+
+srcs/user.o: srcs/user.c
+	$(CC) -c srcs/user.c -o srcs/user.o $(CFLAGS)
+
+team.o: team.c
+	$(CC) -c team.c -o team.o $(CFLAGS)
+
+srcs/hashtable.o: srcs/hashtable.c
+	$(CC) -c srcs/hashtable.c -o srcs/hashtable.o $(CFLAGS)
