@@ -45,8 +45,5 @@ Este projeto foi desenvolvido por:
 - <a href="https://github.com/Abel0207"><img src="https://github.com/Abel0207.png?size=50" alt="Abel Canas" width="25" height="25" align="center"> Abel Canas</a>
 ---
 
-## 📅 Data
-02/06/2025 -> 06/06/2025 -> Em andamento
-
-## 📄 Licença
-Projeto académico - sem licença pública.
+## 📅 Cronologia
+02/06/2025 -> 06/06/2025 -> 07/07/2025 : ✅ Projeto Entregue
