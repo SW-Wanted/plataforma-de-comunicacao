@@ -10,6 +10,18 @@ void menu_corporativo();
 void menu_convidado();
 void menu_autenticacao();
 
+// Função simples para validar email (deve conter '@' e '.')
+int validar_email(const char *email) {
+    const char *at = strchr(email, '@');
+    const char *dot = strrchr(email, '.');
+    return at && dot && at < dot && strlen(email) >= 5;
+}
+
+// Função simples para validar senha (mínimo 4 caracteres)
+int validar_senha(const char *senha) {
+    return senha && strlen(senha) >= 4;
+}
+
 int main() {
     setlocale(LC_ALL, "Portuguese");
     carregar_tudo(); // Carrega dados do sistema
@@ -61,11 +73,11 @@ void menu_autenticacao() {
     }
 
     printf(CYAN BOLD "\n    +--------------------------------------+\n");
-    printf("    |" RESET WHITE "      PLATAFORMA DE COMUNICACAO      " CYAN "|\n");
+    printf("    |" RESET WHITE "      PLATAFORMA DE COMUNICACAO       " CYAN "|\n");
     printf("    +--------------------------------------+\n" RESET);
-    printf("    |" YELLOW " 1 " RESET "| " WHITE "Cadastrar-se                " CYAN "|\n");
-    printf("    |" YELLOW " 2 " RESET "| " WHITE "Iniciar Sessao               " CYAN "|\n");
-    printf("    |" YELLOW " 0 " RESET "| " WHITE "Sair                         " CYAN "|\n");
+    printf("    |" YELLOW " 1 " RESET "| " WHITE "Cadastrar-se                     " CYAN "|\n");
+    printf("    |" YELLOW " 2 " RESET "| " WHITE "Iniciar Sessao                   " CYAN "|\n");
+    printf("    |" YELLOW " 0 " RESET "| " WHITE "Sair                             " CYAN "|\n");
     printf("    +--------------------------------------+\n" RESET);
     printf(BOLD "    Escolha: " RESET);
     scanf("%d", &op);
@@ -73,44 +85,57 @@ void menu_autenticacao() {
 
     switch (op) {
         case 1:
-            printf(GREEN "\n    +------ Cadastro ------+\n" RESET);
+            printf(GREEN "\n    +------------------- Cadastro -------------------+\n" RESET);
             printf("    Nome: "); fgets(nome, sizeof(nome), stdin); strtok(nome, "\n");
-            printf("    Email: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
-            printf("    Senha: "); fgets(senha, sizeof(senha), stdin); strtok(senha, "\n");
-            // Só mostra mensagem de ADMIN se o cadastro for possível
+            do {
+                printf("    Email: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
+                if (!validar_email(email))
+                    printf(RED "    [!] Email invalido. Tente novamente.\n" RESET);
+            } while (!validar_email(email));
+            do {
+                printf("    Senha (min 4 chars): "); fgets(senha, sizeof(senha), stdin); strtok(senha, "\n");
+                if (!validar_senha(senha))
+                    printf(RED "    [!] Senha invalida. Tente novamente.\n" RESET);
+            } while (!validar_senha(senha));
             if (!existe_admin) {
                 if (!buscar_membro(email)) {
-                    printf(YELLOW "    Este sera o ADMINISTRADOR do sistema.\n" RESET);
+                    printf(YELLOW "    [!] Este sera o ADMINISTRADOR do sistema.\n" RESET);
                 }
                 if (cadastrar_utilizador(nome, email, senha, ADMIN)) {
-                    printf(GREEN "    Cadastro concluido como ADMINISTRADOR.\n" RESET);
+                    printf(GREEN "    [✓] Cadastro concluido como ADMINISTRADOR.\n" RESET);
+                    salvar_membros();
                 } else {
-                    printf(RED "    Email ja cadastrado.\n" RESET);
+                    printf(RED "    [!] Email ja cadastrado.\n" RESET);
                 }
             } else {
                 if (cadastrar_utilizador(nome, email, senha, CONVIDADO)) {
-                    printf(GREEN "    Cadastro concluido como CONVIDADO.\n" RESET);
+                    printf(GREEN "    [✓] Cadastro concluido como CONVIDADO.\n" RESET);
+                    salvar_membros();
                 } else {
-                    printf(RED "    Email ja cadastrado.\n" RESET);
+                    printf(RED "    [!] Email ja cadastrado.\n" RESET);
                 }
             }
+            printf(CYAN "    +------------------------------------------------+\n" RESET);
             break;
         case 2:
-            printf(GREEN "\n    +------ Login ------+\n" RESET);
+            printf(GREEN "\n    +-------------------- Login ---------------------+\n" RESET);
             printf("    Email: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
             printf("    Senha: "); fgets(senha, sizeof(senha), stdin); strtok(senha, "\n");
             if (login(email, senha)) {
-                printf(GREEN "    Login bem-sucedido! Bem-vindo %s.\n" RESET, email);
+                printf(GREEN "    [✓] Login bem-sucedido! Bem-vindo %s.\n" RESET, email);
             } else {
-                printf(RED "    Credenciais invalidas.\n" RESET);
+                printf(RED "    [!] Credenciais invalidas.\n" RESET);
             }
+            printf(CYAN "    +------------------------------------------------+\n" RESET);
             break;
         case 0:
-            printf(YELLOW "    A encerrar...\n" RESET);
+            printf(YELLOW "\n    +------------------- Encerrando -----------------+\n" RESET);
             guardar_sistema();
+            printf(GREEN "    [✓] Dados salvos. Ate logo!\n" RESET);
+            printf(CYAN "    +------------------------------------------------+\n" RESET);
             exit(0);
         default:
-            printf(RED "    Opcao invalida.\n" RESET);
+            printf(RED "    [!] Opcao invalida.\n" RESET);
     }
 
     // Undefine macros to avoid pollution
@@ -139,93 +164,123 @@ void menu_admin() {
     #define RED     "\033[31m"
     #define WHITE   "\033[97m"
 
-    printf(CYAN BOLD "\n    +-------------------------------+\n");
-    printf("    |" RESET WHITE "      MENU ADMINISTRADOR      " CYAN "|\n");
-    printf("    +-------------------------------+\n" RESET);
-    printf("    |" YELLOW " 1 " RESET "| " WHITE "Criar nova equipa         " CYAN "|\n");
-    printf("    |" YELLOW " 2 " RESET "| " WHITE "Adicionar membro a equipa  " CYAN "|\n");
-    printf("    |" YELLOW " 3 " RESET "| " WHITE "Promover membro           " CYAN "|\n");
-    printf("    |" YELLOW " 4 " RESET "| " WHITE "Ver perfil                " CYAN "|\n");
-    printf("    |" YELLOW " 5 " RESET "| " WHITE "Ver mensagens             " CYAN "|\n");
-    printf("    |" YELLOW " 6 " RESET "| " WHITE "Listar equipas            " CYAN "|\n");
-    // Funcionalidades de colaborador/corporativo:
-    printf("    |" YELLOW " 7 " RESET "| " WHITE "Enviar mensagem           " CYAN "|\n");
-    printf("    |" YELLOW " 8 " RESET "| " WHITE "Enviar documento          " CYAN "|\n");
-    printf("    |" YELLOW " 9 " RESET "| " WHITE "Juntar-se a equipa publica" CYAN "|\n");
-    printf("    |" YELLOW "10 " RESET "| " WHITE "Listar equipas publicas   " CYAN "|\n");
-    printf("    |" YELLOW "11 " RESET "| " WHITE "Bloquear utilizador       " CYAN "|\n");
-    printf("    |" YELLOW "99" RESET "| " WHITE "Terminar sessao           " CYAN "|\n");
-    printf("    |" YELLOW " 0 " RESET "| " WHITE "Sair                      " CYAN "|\n");
-    printf("    +-------------------------------+\n" RESET);
+    printf(CYAN BOLD "\n    +---------------------- MENU ADMINISTRADOR ----------------------+\n" RESET);
+    printf("    |" YELLOW " 1 " RESET "| " WHITE "Criar nova equipa                                          " CYAN "|\n");
+    printf("    |" YELLOW " 2 " RESET "| " WHITE "Adicionar membro a equipa                                  " CYAN "|\n");
+    printf("    |" YELLOW " 3 " RESET "| " WHITE "Remover membro da equipa                                   " CYAN "|\n");
+    printf("    |" YELLOW " 4 " RESET "| " WHITE "Desativar membro                                           " CYAN "|\n");
+    printf("    |" YELLOW " 5 " RESET "| " WHITE "Promover membro                                            " CYAN "|\n");
+    printf("    |" YELLOW " 6 " RESET "| " WHITE "Ver perfil                                                 " CYAN "|\n");
+    printf("    |" YELLOW " 7 " RESET "| " WHITE "Ver mensagens                                              " CYAN "|\n");
+    printf("    |" YELLOW " 8 " RESET "| " WHITE "Listar equipas                                             " CYAN "|\n");
+    printf("    |" YELLOW " 9 " RESET "| " WHITE "Listar equipas publicas                                    " CYAN "|\n");
+    printf("    |" YELLOW "10 " RESET "| " WHITE "Bloquear utilizador                                        " CYAN "|\n");
+    printf("    |" YELLOW "99" RESET "| " WHITE "Terminar sessao                                             " CYAN "|\n");
+    printf("    |" YELLOW " 0 " RESET "| " WHITE "Sair                                                       " CYAN "|\n");
+    printf("    +----------------------------------------------------------------+\n" RESET);
     printf(BOLD "    Escolha: " RESET);
     scanf("%d", &op); getchar();
 
     switch (op) {
         case 1:
-            printf("Nome da equipa: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
-            printf("E publica? (1=Sim, 0=Nao): "); scanf("%d", &publica); getchar();
-            criar_nova_equipa(equipa, publica ? true : false);
+            printf(CYAN "\n    +------ Criar Nova Equipa ------+\n" RESET);
+            printf("    Nome da equipa: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
+            printf("    E publica? (1=Sim, 0=Nao): "); scanf("%d", &publica); getchar();
+            if (criar_nova_equipa(equipa, publica ? true : false))
+                printf(GREEN "    [✓] Equipa criada com sucesso.\n" RESET);
+            else
+                printf(RED "    [!] Erro ao criar equipa.\n" RESET);
+            printf(CYAN "    +--------------------------------+\n" RESET);
             break;
         case 2:
-            printf("Email do membro: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
-            printf("Nome da equipa: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
+            printf(CYAN "\n    +------ Adicionar Membro a Equipa ------+\n" RESET);
+            printf("    Email do membro: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
+            printf("    Nome da equipa: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
             if (adicionar_membro_para_equipa(email, equipa))
-                printf("Membro adicionado.\n");
+                printf(GREEN "    [✓] Membro adicionado.\n" RESET);
             else
-                printf("Erro ao adicionar membro.\n");
+                printf(RED "    [!] Erro ao adicionar membro.\n" RESET);
+            printf(CYAN "    +---------------------------------------+\n" RESET);
             break;
         case 3:
-            printf("Email do membro a promover: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
-            printf("Novo tipo (A, C): "); scanf(" %c", &tipo); getchar();
-            if (promover_utilizador(email, tipo))
-                printf("Promocao concluida.\n");
+            printf(CYAN "\n    +------ Remover Membro da Equipa ------+\n" RESET);
+            printf("    Email do membro: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
+            printf("    Nome da equipa: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
+            if (remover_membro_equipa(buscar_equipa(todas_equipas, equipa), email))
+                printf(GREEN "    [✓] Membro removido da equipa.\n" RESET);
             else
-                printf("Erro na promocao.\n");
+                printf(RED "    [!] Erro ao remover membro.\n" RESET);
+            printf(CYAN "    +--------------------------------------+\n" RESET);
             break;
         case 4:
-            ver_perfil();
+            printf(CYAN "\n    +------ Desativar Membro ------+\n" RESET);
+            printf("    Email do membro a desativar: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
+            {
+                Membro *m = buscar_membro(email);
+                if (m && m != utilizador_logado) {
+                    m->ativo = false;
+                    printf(GREEN "    [✓] Membro desativado.\n" RESET);
+                } else {
+                    printf(RED "    [!] Erro ao desativar membro.\n" RESET);
+                }
+            }
+            printf(CYAN "    +------------------------------+\n" RESET);
             break;
         case 5:
-            ver_mensagens();
+            printf(CYAN "\n    +------ Promover Membro ------+\n" RESET);
+            printf("    Email do membro a promover: "); fgets(email, sizeof(email), stdin); strtok(email, "\n");
+            printf("    Novo tipo (A, C): "); scanf(" %c", &tipo); getchar();
+            if (promover_utilizador(email, tipo))
+                printf(GREEN "    [✓] Promocao concluida.\n" RESET);
+            else
+                printf(RED "    [!] Erro na promocao.\n" RESET);
+            printf(CYAN "    +-----------------------------+\n" RESET);
             break;
         case 6:
-            listar_equipas_ativas();
+            printf(CYAN "\n    +------ Perfil ------+\n" RESET);
+            ver_perfil();
+            printf(CYAN "    +--------------------+\n" RESET);
             break;
-        // Funcionalidades de colaborador/corporativo:
         case 7:
-            printf("Destino: "); fgets(destino, sizeof(destino), stdin); strtok(destino, "\n");
-            printf("Mensagem: "); fgets(texto, sizeof(texto), stdin); strtok(texto, "\n");
-            enviar_msg(destino, texto);
+            printf(CYAN "\n    +------ Mensagens ------+\n" RESET);
+            ver_mensagens();
+            printf(CYAN "    +-----------------------+\n" RESET);
             break;
         case 8:
-            printf("Nome do documento: "); fgets(doc, sizeof(doc), stdin); strtok(doc, "\n");
-            enviar_doc(doc);
+            printf(CYAN "\n    +------ Equipas Ativas ------+\n" RESET);
+            listar_equipas_ativas();
+            printf(CYAN "    +----------------------------+\n" RESET);
             break;
         case 9:
-            printf("Nome da equipa publica: "); fgets(equipa, sizeof(equipa), stdin); strtok(equipa, "\n");
-            if (juntar_a_equipa_publica(equipa))
-                printf("Entrou na equipa com sucesso.\n");
-            else
-                printf("Erro ao entrar na equipa.\n");
+            printf(CYAN "\n    +------ Equipas Publicas ------+\n" RESET);
+            listar_equipas_publicas(todas_equipas);
+            printf(CYAN "    +------------------------------+\n" RESET);
             break;
         case 10:
-            listar_equipas_publicas(todas_equipas);
-            break;
-        case 11:
-            printf("Email do utilizador a bloquear: "); fgets(destino, sizeof(destino), stdin); strtok(destino, "\n");
-            bloquear_utilizador(destino);
+            printf(CYAN "\n    +------ Bloquear Utilizador ------+\n" RESET);
+            printf("    Email do utilizador a bloquear: "); fgets(destino, sizeof(destino), stdin); strtok(destino, "\n");
+            if (bloquear_utilizador(destino))
+                printf(GREEN "    [✓] Utilizador bloqueado.\n" RESET);
+            else
+                printf(RED "    [!] Erro ao bloquear utilizador.\n" RESET);
+            printf(CYAN "    +----------------------------------+\n" RESET);
             break;
         case 99:
+            printf(YELLOW "\n    +------ Terminando Sessao ------+\n" RESET);
             logout();
+            printf(GREEN "    [✓] Sessao terminada.\n" RESET);
+            printf(CYAN "    +-------------------------------+\n" RESET);
             break;
         case 0:
+            printf(YELLOW "\n    +------ Encerrando ------+\n" RESET);
             guardar_sistema();
+            printf(GREEN "    [✓] Dados salvos. Ate logo!\n" RESET);
+            printf(CYAN "    +------------------------+\n" RESET);
             exit(0);
         default:
-            printf("Opcao invalida.\n");
+            printf(RED "    [!] Opcao invalida.\n" RESET);
     }
 
-    // Undefine macros to evitar poluicao
     #undef RESET
     #undef BOLD
     #undef CYAN

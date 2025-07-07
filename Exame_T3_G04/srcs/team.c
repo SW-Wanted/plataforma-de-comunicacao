@@ -4,7 +4,6 @@
 #define TEAM_DATA_PATH "data/equipas.txt"
 
 // Lista global de equipas
-static Equipa *listaEquipas = NULL;
 
 // Cria uma nova equipa
 Equipa* criar_equipa(const char *nome, bool publica) {
@@ -88,7 +87,8 @@ void listar_equipas_publicas(const Equipa *lista) {
 void salvar_equipas() {
     FILE *f = fopen(TEAM_DATA_PATH, "w");
     if (!f) return;
-    Equipa *lista = listaEquipas;
+    // Use todas_equipas (global) em vez de listaEquipas
+    Equipa *lista = todas_equipas;
     while (lista) {
         fprintf(f, "%s;%d\n", lista->nome, lista->publica);
         TeamMember *tm = lista->membros;
