@@ -1,0 +1,85 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Página-1" id="JqGHKs8kTBDd3DwLrAmb">
+    <mxGraphModel dx="1058" dy="536" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="LfmrrgTEnbvnGaY08pID-16" value="Plataforma de Comunicação - Membro Corporativo" style="shape=rect;html=1;verticalAlign=top;fontStyle=1;whiteSpace=wrap;align=center;" vertex="1" parent="1">
+          <mxGeometry x="255" y="66" width="340" height="470" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-17" value="Enviar&lt;div&gt;Mensagem&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="373" y="139" width="105" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-18" value="Partilhar&lt;div&gt;Documento&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="373" y="239" width="105" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-25" value="&amp;lt;&amp;lt;inclui&amp;gt;&amp;gt;" style="edgeStyle=none;html=1;endArrow=open;verticalAlign=bottom;dashed=1;labelBackgroundColor=none;rounded=0;" edge="1" parent="1" target="LfmrrgTEnbvnGaY08pID-21">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="438.47999062644453" y="289.46270284314346" as="sourcePoint" />
+            <mxPoint x="510" y="290" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-45" target="LfmrrgTEnbvnGaY08pID-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="160" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="220" y="301" />
+              <mxPoint x="220" y="269" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-45" target="LfmrrgTEnbvnGaY08pID-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="301" />
+              <mxPoint x="220" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-45" target="LfmrrgTEnbvnGaY08pID-48">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="301" />
+              <mxPoint x="220" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-45" value="Corporativo" style="shape=umlActor;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="150" y="271" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-48" value="Convidar Membro para Conversa" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="373" y="329" width="105" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-49" value="Bloquear ou Desbloquear Membro" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="373" y="409" width="105" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.029;entryY=0.633;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-45" target="LfmrrgTEnbvnGaY08pID-49">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="301" />
+              <mxPoint x="220" y="450" />
+              <mxPoint x="376" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-53" value="&amp;lt;&amp;lt;inclui&amp;gt;&amp;gt;" style="edgeStyle=none;html=1;endArrow=open;verticalAlign=bottom;dashed=1;labelBackgroundColor=none;rounded=0;entryX=0.576;entryY=1.067;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.576;exitY=0.183;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-18" target="LfmrrgTEnbvnGaY08pID-17">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="140" y="310" as="sourcePoint" />
+            <mxPoint x="300" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LfmrrgTEnbvnGaY08pID-54" value="&amp;lt;&amp;lt;inclui&amp;gt;&amp;gt;" style="edgeStyle=none;html=1;endArrow=open;verticalAlign=bottom;dashed=1;labelBackgroundColor=none;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="LfmrrgTEnbvnGaY08pID-48" target="LfmrrgTEnbvnGaY08pID-17">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="540" y="286" as="sourcePoint" />
+            <mxPoint x="540" y="239" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="359" />
+              <mxPoint x="550" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
