@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = srcs/main.o srcs/message.o srcs/platform.o srcs/team.o srcs/user.o
-LINKOBJ  = srcs/main.o srcs/message.o srcs/platform.o srcs/team.o srcs/user.o
+OBJ      = srcs/main.o srcs/message.o srcs/platform.o srcs/team.o srcs/user.o srcs/graph.o srcs/hashtable.o
+LINKOBJ  = srcs/main.o srcs/message.o srcs/platform.o srcs/team.o srcs/user.o srcs/graph.o srcs/hashtable.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
@@ -38,3 +38,9 @@ srcs/team.o: srcs/team.c
 
 srcs/user.o: srcs/user.c
 	$(CC) -c srcs/user.c -o srcs/user.o $(CFLAGS)
+
+srcs/graph.o: srcs/graph.c
+	$(CC) -c srcs/graph.c -o srcs/graph.o $(CFLAGS)
+
+srcs/hashtable.o: srcs/hashtable.c
+	$(CC) -c srcs/hashtable.c -o srcs/hashtable.o $(CFLAGS)

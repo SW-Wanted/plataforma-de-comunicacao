@@ -1,130 +1,180 @@
 #include "../includes/platform.h"
 
-Membro *tabelaMembros[TAM_HASH];
+#define DATA_PATH "data/membros.txt"
 
-int hash(char *email) {
+Membro* tabelaMembros[TAM_HASH] = { NULL };
+
+int hash(const char *email) {
     int h = 0;
-    int i;
-    for (i = 0; email[i] != '\0'; i++)
-        h += email[i];
+    while (*email)
+        h += *email++;
     return h % TAM_HASH;
 }
 
-Membro* buscar_membro(char *email) {
+// Criacao de membro
+Membro* criar_membro(const char *email, const char *senha, TipoMembro tipo) {
+    Membro *m = malloc(sizeof(Membro));
+    strcpy(m->email, email);
+    strcpy(m->senha, senha);
+    m->tipo = tipo;
+    m->ativo = true;
+    m->documentos = NULL;
+    m->bloqueios = NULL;
+    m->prox = NULL;
+    return m;
+}
+
+void liberar_membro(Membro *m) {
+    Documento *d = m->documentos;
+    while (d) {
+        Documento *tmp = d;
+        d = d->prox;
+        free(tmp);
+    }
+
+    Bloqueio *b = m->bloqueios;
+    while (b) {
+        Bloqueio *tmp = b;
+        b = b->prox;
+        free(tmp);
+    }
+
+    free(m);
+}
+
+// Conversor enum -> texto
+const char* tipo_membro_str(TipoMembro tipo) {
+    switch (tipo) {
+        case ADMIN: return "Administrador";
+        case CORPORATIVO: return "Corporativo";
+        case CONVIDADO: return "Convidado";
+        default: return "Desconhecido";
+    }
+}
+
+// Impressao de perfil
+void imprimir_perfil(const Membro *m) {
+    printf("\n--- Perfil de Utilizador ---\n");
+    printf("Email: %s\n", m->email);
+    printf("Tipo: %s\n", tipo_membro_str(m->tipo));
+    printf("Estado: %s\n", m->ativo ? "Ativo" : "Inativo");
+    printf("Documentos:\n");
+    Documento *d = m->documentos;
+    while (d) {
+        printf(" - %s\n", d->nome);
+        d = d->prox;
+    }
+}
+
+Membro* buscar_membro(const char *email) {
+    if (email == NULL) return NULL;
     int h = hash(email);
-    Membro *atual = tabelaMembros[h];
-    while (atual) {
-        if (strcmp(atual->email, email) == 0) return atual;
-        atual = atual->prox;
+    Membro *m = tabelaMembros[h];
+    while (m) {
+        if (strcmp(m->email, email) == 0) return m;
+        m = m->prox;
     }
     return NULL;
 }
 
-void cadastrar_membro(char *email, char *senha, char tipo) {
-    if (buscar_membro(email)) {
-        printf("Membro j� existe!\n");
-        return;
-    }
-    int h = hash(email);
-    Membro *novo = malloc(sizeof(Membro));
-    strcpy(novo->email, email);
-    strcpy(novo->senha, senha);
-    novo->tipo = tipo;
-    novo->activo = 1;
-    novo->documentos = NULL;
-    novo->bloqueados = NULL;
-    novo->prox = tabelaMembros[h];
-    tabelaMembros[h] = novo;
-    printf("Membro %s cadastrado com sucesso.\n", email);
+// Insercao
+void inserir_membro_hash(Membro *m) {
+    int h = hash(m->email);
+    m->prox = tabelaMembros[h];
+    tabelaMembros[h] = m;
 }
 
-int login(char *email, char *senha) {
-    Membro *m = buscar_membro(email);
-    if (m && m->activo && strcmp(m->senha, senha) == 0) {
-        printf("\n Login bem-sucedido. Bem-vindo(a) %s.\n", email);
-        return 1;
-    }
-    printf("\n Login falhou. Verifique o email/senha.\n");
-    return 0;
+// Documentos
+void adicionar_documento(Membro *m, const char *nomeDoc) {
+    Documento *doc = malloc(sizeof(Documento));
+    strcpy(doc->nome, nomeDoc);
+    doc->prox = m->documentos;
+    m->documentos = doc;
 }
 
-void imprimir_perfil(char *email) {
-    Membro *m = buscar_membro(email);
-    if (!m) {
-        printf("\n Membro n�o encontrado.\n");
-        return;
-    }
-    printf("\n Perfil:\nEmail: %s\nTipo: %c\nEstado: %s\nDocumentos:\n", m->email, m->tipo, m->activo ? "Ativo" : "Inativo");
-    Documento *doc = m->documentos;
-    while (doc) {
-        printf(" - %s\n", doc->nome);
-        doc = doc->prox;
-    }
-}
+// Bloqueio
+bool adicionar_bloqueio(Membro *origem, const char *emailDestino) {
+    if (!origem || buscar_membro(emailDestino) == NULL || strcmp(origem->email, emailDestino) == 0)
+        return false;
 
-void bloquear_membro(char *bloqueador, char *a_bloquear) {
-    Membro *m1 = buscar_membro(bloqueador);
-    Membro *m2 = buscar_membro(a_bloquear);
-    if (!m1 || !m2) {
-        printf("Um dos membros n�o existe.\n");
-        return;
-    }
-    Membro *novo = malloc(sizeof(Membro));
-    strcpy(novo->email, m2->email);
-    novo->prox = m1->bloqueados;
-    m1->bloqueados = novo;
-    printf("Membro %s bloqueou %s.\n", bloqueador, a_bloquear);
-}
-
-int esta_bloqueado(char *origem, char *destino) {
-    Membro *dest = buscar_membro(destino);
-    if (!dest) return 0;
-    Membro *b = dest->bloqueados;
+    Bloqueio *b = origem->bloqueios;
     while (b) {
-        if (strcmp(b->email, origem) == 0)
-            return 1;
+        if (strcmp(b->emailBloqueado, emailDestino) == 0)
+            return false; // ja bloqueado
         b = b->prox;
     }
-    return 0;
+
+    Bloqueio *novo = malloc(sizeof(Bloqueio));
+    strcpy(novo->emailBloqueado, emailDestino);
+    novo->prox = origem->bloqueios;
+    origem->bloqueios = novo;
+    return true;
 }
 
-void guardar_membros() {
-    FILE *f = fopen("membros.txt", "w");
-    int i;
+bool esta_bloqueado(const Membro *origem, const char *emailDestino) {
+    Bloqueio *b = origem->bloqueios;
+    while (b) {
+        if (strcmp(b->emailBloqueado, emailDestino) == 0)
+            return true;
+        b = b->prox;
+    }
+    return false;
+}
+
+// Persistencia
+void salvar_membros() {
+    FILE *f = fopen(DATA_PATH, "w");
+    if (!f) return;
+
+    int i; // declaração fora do for
     for (i = 0; i < TAM_HASH; i++) {
         Membro *m = tabelaMembros[i];
         while (m) {
-            fprintf(f, "%s;%s;%c;%d\n", m->email, m->senha, m->tipo, m->activo);
+            fprintf(f, "%s;%s;%d;%d\n", m->email, m->senha, m->tipo, m->ativo);
             Documento *d = m->documentos;
             while (d) {
                 fprintf(f, "D;%s\n", d->nome);
                 d = d->prox;
             }
+            Bloqueio *b = m->bloqueios;
+            while (b) {
+                fprintf(f, "B;%s\n", b->emailBloqueado);
+                b = b->prox;
+            }
             m = m->prox;
         }
     }
+
     fclose(f);
 }
 
 void carregar_membros() {
-    FILE *f = fopen("data/membros/membros.txt", "r");
+    FILE *f = fopen(DATA_PATH, "r");
     if (!f) return;
-    char linha[100];
-    Membro *m = NULL;
+
+    char linha[200];
+    Membro *atual = NULL;
+
     while (fgets(linha, sizeof(linha), f)) {
         if (linha[0] == 'D') {
             Documento *d = malloc(sizeof(Documento));
             sscanf(linha, "D;%[^\n]", d->nome);
-            d->prox = m->documentos;
-            m->documentos = d;
+            d->prox = atual->documentos;
+            atual->documentos = d;
+        } else if (linha[0] == 'B') {
+            Bloqueio *b = malloc(sizeof(Bloqueio));
+            sscanf(linha, "B;%[^\n]", b->emailBloqueado);
+            b->prox = atual->bloqueios;
+            atual->bloqueios = b;
         } else {
-            char email[50], senha[20], tipo;
-            int activo;
-            sscanf(linha, "%[^;];%[^;];%c;%d", email, senha, &tipo, &activo);
-            cadastrar_membro(email, senha, tipo);
-            m = buscar_membro(email);
-            m->activo = activo;
+            char email[EMAIL_MAX], senha[PASSWORD_MAX];
+            int tipo, ativo;
+            sscanf(linha, "%[^;];%[^;];%d;%d", email, senha, &tipo, &ativo);
+            atual = criar_membro(email, senha, tipo);
+            atual->ativo = ativo;
+            inserir_membro_hash(atual);
         }
     }
+
     fclose(f);
 }
